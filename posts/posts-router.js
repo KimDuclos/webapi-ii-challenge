@@ -28,31 +28,62 @@ router.post('/', async (req, res) => {
     };
 });
 
-
 // /api/posts -- GET
 router.get('/', async (req, res) => {
     try {
-        const postsReturn = await Posts.find(); // set variable to posts query
-        res.status(200).json(postsReturn); // if retrieved, return 200 OK and posts
-    }
-    catch(error) { // data is not retrieved correctly
-            res.status(500).json( { error: 'The posts information could not be retrieved.' } );
+        const posts = await Posts.find(); // get all posts from database
+        res.status(200).json(posts); // 200 OK if posts retrieved
+    } catch (error) { // error if posts not retrieved correctly
+        res.status(500).json( { error: 'The posts information could not be retrieved' } );
     }
 });
 
 // /api/posts:id -- GET
-router.get('/:id', (req, res) => {
-    res.status(200).send('GET /posts/:id endpoint');
+router.get('/:id', async (req, res) => {
+    try {
+        const post = await Posts.findById(req.params.id); // find the post using ID via param
+
+        if (post) { // truthy
+            res.status(200).json(post);
+        } else {
+            res.status(404).json( { message: 'The post with the specific ID does not exist.' } );
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500).json( { error: 'The post information could not be retrieved.' } );
+    }
 });
 
 // /api/posts:id -- DELETE
-router.delete('/:id', (req, res) => {
-    res.status(200).send('DELETE  /posts/:id endpoint');
+router.delete('/:id', async (req, res) => {
+    try {
+        const delPost = await Posts.remove(req.params.id);
+        if (count > 0) {
+            res.status(200).json(delPost);
+        } else {
+            res.status(404).json( { message: 'The post with the specified ID does not exist.' } );
+        } 
+    } catch (error) {
+            console.log(error);
+            res.status(500).json( { error: 'The post could not be removed.' } );
+    }
 });
 
 // /api/posts:id -- PUT
-router.put('/:id', (res, req) => {
-    res.status(200).send('PUT /posts/:id endpoint');
+router.put('/:id', async (res, req) => {
+    try {
+        const putPost = await Posts.update(req.param.id, req.body);
+        if (putPost) {
+            res.status(200).json(putPost);
+        } else if (post.title === null || post.contents === null) {
+            res.status().json();
+        } else {
+            res.status(400).json( { message: 'Please provide title and contents for the post.' } );
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500).json( { error: 'The post information could not be modified' } );
+    }
 });
 
 module.exports = router;
