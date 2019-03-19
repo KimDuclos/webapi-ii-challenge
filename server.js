@@ -1,9 +1,19 @@
+// server with routes
+
+// uses functions from db.js
+const DB = require('./data/db');
+
 const express = require('express');
 
 const router = express.Router();
 
 router.post('/', (req, res) => {
-    res.status(200).send('POST /posts endpoint');
+    let titleContents = req.body;
+    if (titleContents.title === null || titleContents.contents === null) {
+        res.status(400).send( { errorMessage: 'Please provide title and contents for the post.'});
+    } else {
+        
+    }
 });
 
 router.get('/', (req, res) => {
