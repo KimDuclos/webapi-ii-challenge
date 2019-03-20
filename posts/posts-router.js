@@ -9,18 +9,13 @@ const router = express.Router();
 // /api/posts -- POST
 router.post('/', async (req, res) => {
     try {
-        const post = await Posts.find();  // set full query of posts to variable
+        let post = req.body;  // set full query of posts to variable
 
         if (post.title === null || post.contents === null) {  // if title or contents missing, send error
             res.status(400).json( { errorMessage: 'Please provide title and contents for this post.' });
         } else {
-            Posts.insert(post) // create the new post in the database
-                .then(newPost => { // take that result
-                    Posts.findById(newPost.id) // and find it by its new ID
-                    .then(newPost2 => {  // then take the new result of that 
-                        res.status(201).json(newPost2); // return 201 (created) with full new post
-                    });
-                });        
+            let postResult = await Posts.insert(post) // create the new post in the database
+            res.status(201).json(await Posts.findById(postResult.id)); // return created and the created posts based on the found new ID
         }
     } catch (error) {  // catch all error with database logging
         console.log(error); // log error
