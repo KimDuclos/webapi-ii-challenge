@@ -66,15 +66,18 @@ router.delete('/:id', async (req, res) => {
 
 // /api/posts:id -- PUT
 router.put('/:id', async (req, res) => {
+    const id = req.params.id;
     const post = req.body;
     try {
         if (post.title === null || post.contents === null) {
             res.status(400).json( { message: 'Please provide title and contents for the post.' } );
         } else {
-            const putPost = await Posts.update(req.param.id, req.body);
+            const putPost = await Posts.update(id, post);
             if (putPost) {
-                const putPostIDResult = await Posts.findById(req.param.id)
+                const putPostIDResult = await Posts.findById(id)
                 res.status(200).json(putPostIDResult)
+            } else {
+                res.status(404).json( { message: 'The post with the specified ID does not exist.' } )
             }
         }
     } catch (error) {
