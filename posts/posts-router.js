@@ -36,10 +36,10 @@ router.get('/', async (req, res) => {
 // /api/posts:id -- GET
 router.get('/:id', async (req, res) => {
     try {
-        const post = await Posts.findById(req.params.id); // find the post using ID via param
+        const getPost = await Posts.findById(req.params.id); // find the post using ID via param
 
-        if (post) { // truthy
-            res.status(200).json(post);
+        if (getPost) { 
+            res.status(200).json(getPost);
         } else {
             res.status(404).json( { message: 'The post with the specific ID does not exist.' } );
         }
