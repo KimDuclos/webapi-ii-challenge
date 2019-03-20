@@ -53,8 +53,8 @@ router.get('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
     try {
         const delPost = await Posts.remove(req.params.id);
-        if (count > 0) {
-            res.status(200).json(delPost);
+        if (delPost > 0) {
+            res.status(204).end();
         } else {
             res.status(404).json( { message: 'The post with the specified ID does not exist.' } );
         } 
@@ -65,15 +65,17 @@ router.delete('/:id', async (req, res) => {
 });
 
 // /api/posts:id -- PUT
-router.put('/:id', async (res, req) => {
+router.put('/:id', async (req, res) => {
+    const post = req.body;
     try {
-        const putPost = await Posts.update(req.param.id, req.body);
-        if (putPost) {
-            res.status(200).json(putPost);
-        } else if (post.title === null || post.contents === null) {
-            res.status().json();
-        } else {
+        if (post.title === null || post.contents === null) {
             res.status(400).json( { message: 'Please provide title and contents for the post.' } );
+        } else {
+            const putPost = await Posts.update(req.param.id, req.body);
+            if (putPost) {
+                const putPostIDResult = await Posts.findById(req.param.id)
+                res.status(200).json(putPostIDResult)
+            }
         }
     } catch (error) {
         console.log(error);
